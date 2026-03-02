@@ -164,13 +164,24 @@ def vincular_chamado(chamado_id):
         return redirect(url_for('exibir_login'))
         
     id_prof = request.form.get('profissional_selecionado')
-    
     chamado = Chamado.query.get(chamado_id)
+    
     if chamado and id_prof:
-        chamado.profissional_id = id_prof
-        chamado.status = 'Em Andamento'
-        db.session.commit()
-        flash('Profissional vinculado com sucesso!')
+        profissional = Profissional.query.get(id_prof)
+        if profissional:
+            chamado.profissional_id = id_prof
+            chamado.status = 'Em Andamento'
+            db.session.commit()
+            
+            # Prepara o pacote de dados para o WhatsApp automático
+            session['disparar_zap'] = {
+                'whats_cliente': chamado.cliente.whatsapp,
+                'msg_cliente': f"O {profissional.nome} irá solucionar o problema relatado no momento do cadastro. Aguarde alguns instantes que o Prof50+ entrará em contato para agendarem o horário.",
+                'whats_prof': profissional.whatsapp,
+                'msg_prof': f"O Sr(a) {chamado.cliente.nome} está esperando um contato seu para agendarem um horário para que você solucione o problema relatado por ele: {chamado.cliente.problema}. WhatsApp do cliente: {chamado.cliente.whatsapp}"
+            }
+            
+            flash('Vínculo realizado! Iniciando automação do WhatsApp...')
     
     return redirect(url_for('listar_chamados'))
 
