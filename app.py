@@ -66,6 +66,9 @@ def index():
 
 @app.route('/login')
 def exibir_login():
+    # Limpa mensagens flash residuais para não abrir o modal direto
+    session.pop('_flashes', None) 
+    
     if 'tentativas' not in session:
         session['tentativas'] = 0
     return render_template('login.html')
