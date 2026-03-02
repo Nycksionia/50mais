@@ -157,7 +157,7 @@ def listar_chamados():
         print(f"Erro ao listar chamados: {e}")
         return f"Erro interno: {e}", 500
     
-    # Rota para vincular um profissional a um chamado
+# Rota para vincular um profissional a um chamado
 @app.route('/vincular_chamado/<int:chamado_id>', methods=['POST'])
 def vincular_chamado(chamado_id):
     if not session.get('logado'):
@@ -173,15 +173,27 @@ def vincular_chamado(chamado_id):
             chamado.status = 'Em Andamento'
             db.session.commit()
             
-            # Prepara o pacote de dados para o WhatsApp automático
+            # Montando as mensagens exatamente como você solicitou
+            msg_cliente = (
+                f"O *{profissional.nome}* irá solucionar o problema relatado no momento do cadastro. "
+                f"Aguarde alguns instantes que o Prof50+ entrará em contato para agendarem o horário."
+            )
+            
+            msg_prof = (
+                f"O Sr(a) *{chamado.cliente.nome}* está esperando um contato seu para agendarem um horário "
+                f"para que você solucione o problema relatado por ele: *{chamado.cliente.problema}*. "
+                f"\n\nNúmero do WhatsApp do cliente: *{chamado.cliente.whatsapp}*"
+            )
+
+            # Prepara o pacote de dados para o JavaScript no chamados.html
             session['disparar_zap'] = {
                 'whats_cliente': chamado.cliente.whatsapp,
-                'msg_cliente': f"O {profissional.nome} irá solucionar o problema relatado no momento do cadastro. Aguarde alguns instantes que o Prof50+ entrará em contato para agendarem o horário.",
+                'msg_cliente': msg_cliente,
                 'whats_prof': profissional.whatsapp,
-                'msg_prof': f"O Sr(a) {chamado.cliente.nome} está esperando um contato seu para agendarem um horário para que você solucione o problema relatado por ele: {chamado.cliente.problema}. WhatsApp do cliente: {chamado.cliente.whatsapp}"
+                'msg_prof': msg_prof
             }
             
-            flash('Vínculo realizado! Iniciando automação do WhatsApp...')
+            flash('Vínculo realizado com sucesso!')
     
     return redirect(url_for('listar_chamados'))
 

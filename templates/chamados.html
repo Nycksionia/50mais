@@ -101,7 +101,8 @@
                                 <td class="px-6 py-4">
                                     {% if chamado.cliente %}
                                     <div class="font-bold text-slate-800">{{ chamado.cliente.nome }}</div>
-                                    <div class="text-[11px] text-slate-400">Problema: {{ chamado.cliente.problema[:30] }}...</div>
+                                    <div class="text-[11px] text-slate-400">Problema: {{ chamado.cliente.problema[:30]
+                                        }}...</div>
                                     {% else %}
                                     <span class="text-red-500 text-xs italic">Erro: Dados do cliente ausentes</span>
                                     {% endif %}
@@ -115,7 +116,8 @@
                                             {{ chamado.profissional.nome[:2].upper() if chamado.profissional.nome else
                                             '??' }}
                                         </div>
-                                        <span class="text-sm font-medium text-slate-700">{{ chamado.profissional.nome }}</span>
+                                        <span class="text-sm font-medium text-slate-700">{{ chamado.profissional.nome
+                                            }}</span>
                                     </div>
                                     {% else %}
                                     <form action="{{ url_for('vincular_chamado', chamado_id=chamado.id) }}"
@@ -153,10 +155,14 @@
                 {% elif chamado.status == 'Em Andamento' %} border-blue-300 text-blue-700 bg-blue-50
                 {% elif chamado.status == 'Concluído' %} border-green-300 text-green-700 bg-green-50
                 {% else %} border-red-300 text-red-700 bg-red-50 {% endif %}">
-                                            <option value="Pendente" {% if chamado.status=='Pendente' %}selected{% endif %}>Pendente</option>
-                                            <option value="Em Andamento" {% if chamado.status=='Em Andamento' %}selected{% endif %}>Em Andamento</option>
-                                            <option value="Concluído" {% if chamado.status=='Concluído' %}selected{% endif %}>Concluído</option>
-                                            <option value="Cancelado" {% if chamado.status=='Cancelado' %}selected{% endif %}>Cancelado</option>
+                                            <option value="Pendente" {% if chamado.status=='Pendente' %}selected{% endif
+                                                %}>Pendente</option>
+                                            <option value="Em Andamento" {% if chamado.status=='Em Andamento'
+                                                %}selected{% endif %}>Em Andamento</option>
+                                            <option value="Concluído" {% if chamado.status=='Concluído' %}selected{%
+                                                endif %}>Concluído</option>
+                                            <option value="Cancelado" {% if chamado.status=='Cancelado' %}selected{%
+                                                endif %}>Cancelado</option>
                                         </select>
                                     </form>
                                 </td>
@@ -237,15 +243,16 @@
             modal.classList.remove('flex');
         }
 
-        // --- NOVA AUTOMAÇÃO DE WHATSAPP ---
-document.addEventListener('DOMContentLoaded', function () {
-    {% if session.get('disparar_zap') %}
-        // O safe garante que o JSON seja lido corretamente pelo JavaScript
-        const dadosZap = {{ session.pop('disparar_zap') | tojson | safe }};
+        // --- AUTOMAÇÃO DE WHATSAPP (ESTILO MELHORIA CONTÍNUA) ---
+        document.addEventListener('DOMContentLoaded', function () {
+            {% if session.get('disparar_zap') %}
+            // Captura os dados e limpa a sessão para não repetir o disparo
+            const dadosZap = {{ session.pop('disparar_zap') | tojson | safe
+        }};
 
         const limparNum = (n) => n.replace(/\D/g, '');
 
-        // Formatação das URLs (API oficial do WhatsApp)
+        // Montagem das URLs usando as mensagens prontas do seu app.py
         const linkCliente = `https://api.whatsapp.com/send?phone=55${limparNum(dadosZap.whats_cliente)}&text=${encodeURIComponent(dadosZap.msg_cliente)}`;
         const linkProf = `https://api.whatsapp.com/send?phone=55${limparNum(dadosZap.whats_prof)}&text=${encodeURIComponent(dadosZap.msg_prof)}`;
 
@@ -253,15 +260,16 @@ document.addEventListener('DOMContentLoaded', function () {
         const win1 = window.open(linkCliente, '_blank');
 
         // Aguarda 1.2 segundos para disparar a segunda (Profissional)
+        // Isso evita que o navegador ache que é um erro e bloqueie a segunda janela
         setTimeout(() => {
             const win2 = window.open(linkProf, '_blank');
 
             if (!win1 || !win2) {
-                alert("O navegador bloqueou as janelas. Por favor, permita pop-ups para este site na barra de endereços.");
+                alert("Atenção: O navegador bloqueou as janelas automáticas. Por favor, clique no ícone de pop-up na barra de endereços e escolha 'Sempre permitir'.");
             }
         }, 1200);
-    {% endif %}
-});
+        {% endif %}
+        });
     </script>
 </body>
 
