@@ -154,6 +154,39 @@ def listar_chamados():
         print(f"Erro ao listar chamados: {e}")
         return f"Erro interno: {e}", 500
     
+    # Rota para vincular um profissional a um chamado
+@app.route('/vincular_chamado/<int:chamado_id>', methods=['POST'])
+def vincular_chamado(chamado_id):
+    if not session.get('logado'):
+        return redirect(url_for('exibir_login'))
+        
+    id_prof = request.form.get('profissional_selecionado')
+    
+    chamado = Chamado.query.get(chamado_id)
+    if chamado and id_prof:
+        chamado.profissional_id = id_prof
+        chamado.status = 'Em Andamento'
+        db.session.commit()
+        flash('Profissional vinculado com sucesso!')
+    
+    return redirect(url_for('listar_chamados'))
+
+# Rota para atualizar apenas o status (Pendente, Concluído, etc)
+@app.route('/atualizar_status_chamado/<int:chamado_id>', methods=['POST'])
+def atualizar_status_chamado(chamado_id):
+    if not session.get('logado'):
+        return redirect(url_for('exibir_login'))
+    
+    novo_status = request.form.get('status_selecionado')
+    chamado = Chamado.query.get(chamado_id)
+    
+    if chamado:
+        chamado.status = novo_status
+        db.session.commit()
+        flash(f'Status do chamado #{chamado_id} atualizado!')
+    
+    return redirect(url_for('listar_chamados'))
+
 # --- ROTAS DE SALVAMENTO ---
 
 @app.route('/salvar-profissional', methods=['POST'])
