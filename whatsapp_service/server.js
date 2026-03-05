@@ -14,9 +14,8 @@ const client = new Client({
             '--disable-setuid-sandbox',
             '--disable-dev-shm-usage',
             '--no-zygote'
-        ],
-        // Esta linha abaixo é a mágica: ela tenta o caminho da variável ou busca o Chrome no sistema
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome' || '/usr/bin/google-chrome-stable'
+        ]
+        // REMOVEMOS a linha do executablePath para ele baixar o dele
     }
 });
 
