@@ -15,8 +15,8 @@ const client = new Client({
             '--disable-dev-shm-usage',
             '--no-zygote'
         ],
-        // Remova a linha fixa e use apenas isso:
-        executablePath: process.env.CHROME_PATH || '/usr/bin/google-chrome-stable' || '/usr/bin/google-chrome'
+        // Esta linha abaixo é a mágica: ela tenta o caminho da variável ou busca o Chrome no sistema
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome' || '/usr/bin/google-chrome-stable'
     }
 });
 
