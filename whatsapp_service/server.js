@@ -14,8 +14,9 @@ const client = new Client({
             '--disable-setuid-sandbox',
             '--disable-dev-shm-usage',
             '--no-zygote'
-        ]
-        // REMOVEMOS a linha do executablePath para ele baixar o dele
+        ],
+        // No Railway com Nixpacks, o Chrome fica aqui:
+        executablePath: '/usr/bin/google-chrome'
     }
 });
 
