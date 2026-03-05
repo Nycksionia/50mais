@@ -13,13 +13,10 @@ const client = new Client({
             '--no-sandbox',
             '--disable-setuid-sandbox',
             '--disable-dev-shm-usage',
-            '--disable-accelerated-2d-canvas',
-            '--no-first-run',
-            '--no-zygote',
-            '--single-process',
-            '--disable-gpu'
+            '--no-zygote'
         ],
-        executablePath: '/usr/bin/google-chrome'
+        // Remova a linha fixa e use apenas isso:
+        executablePath: process.env.CHROME_PATH || '/usr/bin/google-chrome-stable' || '/usr/bin/google-chrome'
     }
 });
 
